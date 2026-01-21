@@ -116,6 +116,36 @@ void traverse_doubly_linkedlist(node* &head){
         return head;
 
     }
+    // insertion before kth value
+    node* insert_before(int val, int k, node* &head){
+        if(head == nullptr){
+            head = new node(val);
+            return head;
+        }
+        if(head->data == k){
+            node* temp = new node(val);
+            temp->next = head;
+            head->back = temp;
+            head = temp;
+            return head;
+        }
+        node* temp = head;
+        while(temp->data != k && temp ->next != nullptr){
+            temp = temp->next;
+        }
+        if(temp->data != k && temp->next ==nullptr) {
+            cout << "no such value" <<endl;
+            return head;
+        }
+        node* prev = temp->back;  //back node    //back --> temp-->front
+        // node* front = temp->next; //front node
+        node* newnode = new node(val);
+        newnode->next = temp;
+        temp->back = newnode;
+        newnode->back = prev;
+        prev->next = newnode;
+        return head; 
+    }
 
 // DELETION CODE
     // delete head
@@ -140,6 +170,74 @@ void traverse_doubly_linkedlist(node* &head){
         node* prev = temp->back;
         prev->next = nullptr;
         temp->back = nullptr;
+        delete temp;
+        return head;
+
+    }
+
+    // delete kth element
+    node* delete_k(int k, node* &head){
+        if(head == nullptr || head->next == nullptr)return nullptr; //empty doubly linked list
+        if(k == 1 ){//single element in doubly linked list
+            node* temp = head;
+            head = temp->next;
+            head->back = nullptr;
+            delete temp;
+            return head;
+        }
+        node* temp = head;
+        int count = 1;
+        while(temp != nullptr){
+            if(count == (k))break;
+            temp = temp->next;
+            count++;
+        }
+        if(temp->next == nullptr){
+            node* prev = temp->back;
+            prev->next = nullptr;
+            temp->back = nullptr;
+            delete temp;
+            return head;
+        }
+        node* prev = temp->back;
+        node* front = temp->next;
+        prev->next = front;
+        front->back = prev;
+        temp->next = nullptr;
+        temp->back = nullptr;
+        delete temp;
+        return head;
+    }
+
+    // delete aa value,node
+    node* delete_val(int val, node* &head){
+        if(head == nullptr) return nullptr;
+        if(head->data == val){
+            node* temp = head;
+            head = temp->next;
+            head->back = nullptr;
+            delete temp;
+            return head;
+        }
+        node* temp = head;
+        while( temp->next != nullptr && temp->data != val ){
+            temp = temp->next;
+        }
+        if(temp->next == nullptr && temp->data == val){
+            node* prev = temp->back;
+            prev->next = temp->back=nullptr;
+            delete temp;
+            return head;   
+        }
+        if(temp ->next == nullptr && temp->data != val){
+            cout << "no such node exixst" <<endl;
+            return head;
+        } 
+        node* prev = temp->back;
+        node* front = temp ->next;
+        prev->next = front;
+        front->back = prev;
+        temp->next = temp->back = nullptr;
         delete temp;
         return head;
 
@@ -170,7 +268,12 @@ int main(){
         cout <<"300 added to 3 place : ";
         traverse_doubly_linkedlist(head);
 
+        //bfore value k
+        head = insert_before(400,5,head);
+        cout << "value 400 is added before 5 : ";
+        traverse_doubly_linkedlist(head);
 
+        
     //  DELETION IN DOUBLY LINKEDLIST
         // delete head
         head = delete_head(head);
@@ -180,5 +283,15 @@ int main(){
         // delete tail
         head = delete_tail(head);
         cout << "deleted tail 200 : ";
+        traverse_doubly_linkedlist(head);
+
+        // delete an element at k th position
+        head = delete_k(3,head);
+        cout << "deleted 300 from 3rd position : ";
+        traverse_doubly_linkedlist(head);
+
+        // delete an elemet 
+        head = delete_val(400,head);
+        cout << "deleted 400 from the doubly linked list : ";
         traverse_doubly_linkedlist(head);
 }
